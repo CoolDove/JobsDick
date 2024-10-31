@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://i8lbgo5buenv"]
+[gd_scene load_steps=7 format=3 uid="uid://i8lbgo5buenv"]
 
 [ext_resource type="Script" path="res://scripts/JobStickMain.cs" id="1_wra4m"]
 [ext_resource type="Shader" path="res://shaders/timeline.gdshader" id="3_2dd0u"]
 [ext_resource type="PackedScene" uid="uid://b7lwqa63sc350" path="res://objects/StickNode.tscn" id="4_4ytqf"]
+[ext_resource type="Texture2D" uid="uid://dvdyr3oy4t7to" path="res://resources/me.png" id="4_dm0yd"]
 [ext_resource type="Texture2D" uid="uid://m4lrekqkfj40" path="res://resources/cursor.svg" id="4_klphp"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_6huug"]
@@ -11,18 +12,21 @@ shader_parameter/spacing = 20.0
 shader_parameter/width = 2.0
 shader_parameter/seg_color = Color(0.396078, 0.160784, 0.160784, 1)
 
-[node name="Node" type="Node" node_paths=PackedStringArray("cam", "line", "ui", "debugLabel", "btnAddNode")]
+[node name="Node" type="Node" node_paths=PackedStringArray("cam", "line", "ui", "debugLabel", "me", "btnAddNode")]
 script = ExtResource("1_wra4m")
 cam = NodePath("Cam")
 pksStickNode = ExtResource("4_4ytqf")
 line = NodePath("Line2D")
 ui = NodePath("UI/Root")
 debugLabel = NodePath("UI/Root/Label")
+me = NodePath("Me")
 btnAddNode = NodePath("UI/Root/BtnAddNode")
 
 [node name="Cam" type="Camera2D" parent="."]
 
 [node name="Cursor" type="Sprite2D" parent="Cam"]
+self_modulate = Color(1, 1, 1, 0.478431)
+z_index = 5
 position = Vector2(0, -24.375)
 scale = Vector2(0.0480372, 0.0281508)
 texture = ExtResource("4_klphp")
@@ -32,6 +36,12 @@ material = SubResource("ShaderMaterial_6huug")
 points = PackedVector2Array(0, 0, 999, 0)
 width = 16.0
 default_color = Color(0.92549, 0.356863, 0.301961, 1)
+
+[node name="Me" type="Sprite2D" parent="."]
+position = Vector2(0, -31.69)
+scale = Vector2(0.115, 0.115)
+texture = ExtResource("4_dm0yd")
+offset = Vector2(0, -25)
 
 [node name="UI" type="CanvasLayer" parent="."]
 

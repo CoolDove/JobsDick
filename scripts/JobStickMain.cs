@@ -1,5 +1,6 @@
 using Godot;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -22,6 +23,9 @@ public partial class JobStickMain : Node
 	[Export]
 	public Label debugLabel;
 
+	[Export]
+	public Node2D me;
+
 	public Node2D nodesParent;
 
 	public int cursorWeek;
@@ -31,6 +35,9 @@ public partial class JobStickMain : Node
 	[Export]
 	public Button btnAddNode;
 
+	// data
+	public DateTime dayBegin;
+	public DateTime currentDay;
 	public List<StickNode> nodes = new();
 
 	private bool _dirty;
@@ -40,6 +47,10 @@ public partial class JobStickMain : Node
 	public MStickNode dropTo;
 
 	private string[] droppedFiles;
+
+	public Action DayChanged;
+
+	private int debugHourOffset;
 
 	public override void _Ready() {
 		instance = this;
@@ -65,18 +76,25 @@ public partial class JobStickMain : Node
 				AddNode(cursorWeek);
 			}
 		};
+		currentDay = GetNowTime().Date;
 
 		// ** read
 		var path = CheckSavePath();
 		if (File.Exists(path)) {
 			var jsonStr = File.ReadAllText(path);
 			var doc = JsonConvert.DeserializeObject<JobStickDoc>(jsonStr);
+			dayBegin = new DateTime(doc.dayTicks);// doc.beginning;
 			foreach (var n in doc.nodes) {
 				AddNodeIntern(n);
 			}
 		}
+		if (dayBegin == new DateTime()) {
+			dayBegin = currentDay.AddDays(-(int)currentDay.DayOfWeek);
+		}
+		SetMePosition();
 	}
 
+	private double timeCheckTime = 1;
 	private double dropFileHoldTime = 0;
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta) {
@@ -85,6 +103,11 @@ public partial class JobStickMain : Node
 		}
 		cursorWeek = (int)(cam.Position.X/weekScale);
 		debugLabel.Text = $"{cursorWeek} 周";
+#if TOOLS
+		var now = DateTime.Now;
+		var dnow = now.AddHours(debugHourOffset);
+		debugLabel.Text = $"{cursorWeek} 周\n({dnow.Date}({now}+{debugHourOffset}))";
+#endif
 
 		if (droppedFiles != null) {
 			if (dropTo != null) {
@@ -105,6 +128,31 @@ public partial class JobStickMain : Node
 			}
 			saveCheckInterval = 1;
 		}
+		timeCheckTime -= delta;
+		if (timeCheckTime <= 0) {
+			if (GetNowTime().Date.Ticks > currentDay.Ticks) {
+				OnDayChanged();
+			}
+			timeCheckTime = 1;
+		}
+	}
+
+	private void OnDayChanged() {
+		GD.Print("Day step!");
+		currentDay = GetNowTime().Date;
+		DayChanged?.Invoke();
+		SetMePosition();
+	}
+
+	private void SetMePosition() {
+		var days = (currentDay-dayBegin).TotalDays;
+		me.Position = new((float)(days/7.0)*weekScale, me.Position.Y);
+	}
+
+	private DateTime GetNowTime() {
+		var now = DateTime.Now;
+		now = now.AddHours(debugHourOffset);
+		return now;
 	}
 
 	public void MarkDirty(bool force=false) {
@@ -128,6 +176,10 @@ public partial class JobStickMain : Node
 			if (Input.IsMouseButtonPressed(MouseButton.Middle)) {
 				cam.Position -= new Vector2(eMmotion.Relative.X / cam.Zoom.X, 0);
 				cam.Position = new (Mathf.Max(0, cam.Position.X), 0);
+			}
+		} else if (@event is InputEventKey eKey) {
+			if (eKey.Pressed && eKey.Keycode == Key.F1) {
+				debugHourOffset += 1;
 			}
 		}
 	}
@@ -156,6 +208,7 @@ public partial class JobStickMain : Node
 
 	public void Save() {
 		JobStickDoc doc = new();
+		doc.dayTicks = dayBegin.Ticks;
 		doc.nodes = nodes;
 		var jsonStr = JsonConvert.SerializeObject(doc, Formatting.Indented);
 		File.WriteAllText(CheckSavePath(), jsonStr);

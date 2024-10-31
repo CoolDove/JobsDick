@@ -40,6 +40,17 @@ public partial class MStickNode : Node2D
 		labelPaste.SelfModulate = modu;
 	}
 
+	public override void _EnterTree() {
+		JobStickMain.instance.DayChanged += OnDayChanged;
+	}
+	public override void _ExitTree() {
+		JobStickMain.instance.DayChanged -= OnDayChanged;
+	}
+
+	private void OnDayChanged() {
+		Refresh();
+	}
+
 	public override void _Process(double delta) {
 		if (texEmptyPanel.Visible) {
 			float scale = texEmptyPanel.Scale.X;
