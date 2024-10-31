@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://b7lwqa63sc350"]
+[gd_scene load_steps=10 format=3 uid="uid://b7lwqa63sc350"]
 
 [ext_resource type="Script" path="res://scripts/MStickNode.cs" id="1_j8f8d"]
 [ext_resource type="FontFile" uid="uid://30h7v1vsuhp" path="res://resources/dengl.ttf" id="1_slxkf"]
+[ext_resource type="Texture2D" uid="uid://if5rc1h5xcju" path="res://resources/close.png" id="3_heym1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_266yq"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -17,14 +18,24 @@ corner_radius_top_left = 20
 corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
+anti_aliasing_size = 0.2
 
-[node name="StickNode" type="Node2D" node_paths=PackedStringArray("edit", "texRect", "texEmptyPanel", "emptyButtons", "btnPaste")]
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0p4xs"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_waf8y"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_kcgrl"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_tu51h"]
+
+[node name="StickNode" type="Node2D" node_paths=PackedStringArray("edit", "texRect", "texEmptyPanel", "emptyButtons", "btnRemove", "labelPaste")]
 script = ExtResource("1_j8f8d")
 edit = NodePath("Edit")
 texRect = NodePath("TextureRect")
 texEmptyPanel = NodePath("TextureRect/EmptyPanel")
 emptyButtons = NodePath("TextureRect/EmptyButtons")
-btnPaste = NodePath("TextureRect/EmptyButtons/BtnPaste")
+btnRemove = NodePath("TextureRect/BtnRemove")
+labelPaste = NodePath("TextureRect/EmptyButtons/LabelPaste")
 
 [node name="Edit" type="LineEdit" parent="."]
 offset_left = -106.0
@@ -76,7 +87,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="BtnPaste" type="Button" parent="TextureRect/EmptyButtons"]
+[node name="LabelPaste" type="Label" parent="TextureRect/EmptyButtons"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 1
 anchors_preset = 3
@@ -84,10 +95,35 @@ anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -63.0
-offset_top = -52.0
+offset_left = -126.0
+offset_top = -150.0
 offset_right = -12.0
 offset_bottom = -12.0
 grow_horizontal = 0
 grow_vertical = 0
-text = "Paste"
+theme_override_colors/font_color = Color(0.87451, 0.498039, 0.352941, 1)
+theme_override_fonts/font = ExtResource("1_slxkf")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_0p4xs")
+text = "Click to paste"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BtnRemove" type="Button" parent="TextureRect"]
+self_modulate = Color(1, 1, 1, 0.898039)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -27.0
+offset_top = 9.0
+offset_right = -9.0
+offset_bottom = 27.0
+grow_horizontal = 0
+focus_mode = 0
+mouse_filter = 1
+theme_override_styles/normal = SubResource("StyleBoxEmpty_waf8y")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_kcgrl")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_tu51h")
+icon = ExtResource("3_heym1")
+icon_alignment = 1
+expand_icon = true
