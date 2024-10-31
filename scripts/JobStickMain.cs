@@ -1,5 +1,7 @@
 using Godot;
+using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
 
 public partial class JobStickMain : Node
 {
@@ -29,9 +31,12 @@ public partial class JobStickMain : Node
 	[Export]
 	public Button btnAddNode;
 
-
 	public List<StickNode> nodes = new();
 
+
+	private bool _dirty;
+	private bool _forceSave;
+	private double saveCheckInterval=1;
 
 	public override void _Ready() {
 		instance = this;
@@ -55,6 +60,16 @@ public partial class JobStickMain : Node
 				AddNode(cursorWeek);
 			}
 		};
+
+		// ** read
+		var path = CheckSavePath();
+		if (File.Exists(path)) {
+			var jsonStr = File.ReadAllText(path);
+			var doc = JsonConvert.DeserializeObject<JobStickDoc>(jsonStr);
+			foreach (var n in doc.nodes) {
+				AddNodeIntern(n);
+			}
+		}
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -64,6 +79,22 @@ public partial class JobStickMain : Node
 		}
 		cursorWeek = (int)(cam.Position.X/weekScale);
 		debugLabel.Text = $"{cursorWeek} 周";
+
+		saveCheckInterval -= delta;
+		if (saveCheckInterval<=0 || _forceSave) {
+			if (_dirty || _forceSave) {
+				Save();
+				_dirty = false;
+				_forceSave = false;
+			}
+			saveCheckInterval = 1;
+		}
+	}
+
+	public void MarkDirty(bool force=false) {
+		_dirty = true;
+		_forceSave |= force;
+		saveCheckInterval = 1;
 	}
 
 	public override void _Input(InputEvent @event) {
@@ -85,6 +116,15 @@ public partial class JobStickMain : Node
 		}
 	}
 
+	private void AddNodeIntern(StickNode node, bool dirty=false) {
+		nodes.Add(node);
+
+		var mnode = pksStickNode.Instantiate<MStickNode>();
+		mnode.data = node;
+		nodesParent.AddChild(mnode);
+		mnode.Refresh();
+		if (dirty) MarkDirty();
+	}
 	public void AddNode(int week) {
 		StickNode node = new() {
 			week = week,
@@ -95,11 +135,30 @@ public partial class JobStickMain : Node
 		mnode.data = node;
 		nodesParent.AddChild(mnode);
 		mnode.Refresh();
+		MarkDirty();
+	}
+
+	public void Save() {
+		JobStickDoc doc = new();
+		doc.nodes = nodes;
+		var jsonStr = JsonConvert.SerializeObject(doc, Formatting.Indented);
+		File.WriteAllText(CheckSavePath(), jsonStr);
+		GD.Print("saved");
+	}
+
+	private string CheckSavePath() {
+		var path = System.Environment.GetEnvironmentVariable("LOCALAPPDATA");
+		path = Path.Join(path, "JobStick");
+		if (!Directory.Exists(path)) {
+			Directory.CreateDirectory(path);
+		}
+		return Path.Join(path, "nodes.json");
 	}
 }
 
 public class StickNode {
 	public string text;
 	public int week;
-	public string picture;
+	public bool unlocked;
+	public bool got;
 }
