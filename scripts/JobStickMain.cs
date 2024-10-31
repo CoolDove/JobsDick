@@ -33,10 +33,13 @@ public partial class JobStickMain : Node
 
 	public List<StickNode> nodes = new();
 
-
 	private bool _dirty;
 	private bool _forceSave;
 	private double saveCheckInterval=1;
+
+	public MStickNode dropTo;
+
+	private string[] droppedFiles;
 
 	public override void _Ready() {
 		instance = this;
@@ -47,6 +50,8 @@ public partial class JobStickMain : Node
 		nodesParent = new();
 		nodesParent.Name = "StickNodesRoot";
 		AddChild(nodesParent);
+
+		GetTree().Root.FilesDropped += OnFileDrop;
 
 		btnAddNode.Pressed += ()=> {
 			bool ok = true;
@@ -72,6 +77,7 @@ public partial class JobStickMain : Node
 		}
 	}
 
+	private double dropFileHoldTime = 0;
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta) {
 		if (line.Material is ShaderMaterial shm) {
@@ -79,6 +85,16 @@ public partial class JobStickMain : Node
 		}
 		cursorWeek = (int)(cam.Position.X/weekScale);
 		debugLabel.Text = $"{cursorWeek} 周";
+
+		if (droppedFiles != null) {
+			if (dropTo != null) {
+				dropTo?.DropFile(droppedFiles);
+				droppedFiles = null;
+			} else {
+				dropFileHoldTime -= delta;
+				if (dropFileHoldTime <= 0) droppedFiles = null;
+			}
+		}
 
 		saveCheckInterval -= delta;
 		if (saveCheckInterval<=0 || _forceSave) {
@@ -146,13 +162,26 @@ public partial class JobStickMain : Node
 		GD.Print("saved");
 	}
 
-	private string CheckSavePath() {
+	public static string CheckSaveDir() {
 		var path = System.Environment.GetEnvironmentVariable("LOCALAPPDATA");
 		path = Path.Join(path, "JobStick");
 		if (!Directory.Exists(path)) {
 			Directory.CreateDirectory(path);
 		}
+		return path;
+	}
+	public static string GetSavePicPath(StickNode n) {
+		return Path.Join(CheckSaveDir(), $"week{n.week}.png");
+	}
+
+	private string CheckSavePath() {
+		var path = CheckSaveDir();
 		return Path.Join(path, "nodes.json");
+	}
+	private void OnFileDrop(string[] files) {
+		GD.Print($"drop file: {files[0]}");
+		droppedFiles = files;
+		dropFileHoldTime = 0.2;
 	}
 }
 
