@@ -1,0 +1,69 @@
+[gd_scene load_steps=6 format=3 uid="uid://i8lbgo5buenv"]
+
+[ext_resource type="Script" path="res://scripts/JobStickMain.cs" id="1_wra4m"]
+[ext_resource type="Shader" path="res://shaders/timeline.gdshader" id="3_2dd0u"]
+[ext_resource type="PackedScene" uid="uid://b7lwqa63sc350" path="res://objects/StickNode.tscn" id="4_4ytqf"]
+[ext_resource type="Texture2D" uid="uid://m4lrekqkfj40" path="res://resources/cursor.svg" id="4_klphp"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_6huug"]
+shader = ExtResource("3_2dd0u")
+shader_parameter/spacing = 20.0
+shader_parameter/width = 2.0
+shader_parameter/seg_color = Color(0.396078, 0.160784, 0.160784, 1)
+
+[node name="Node" type="Node" node_paths=PackedStringArray("cam", "line", "ui", "debugLabel", "btnAddNode")]
+script = ExtResource("1_wra4m")
+cam = NodePath("Cam")
+pksStickNode = ExtResource("4_4ytqf")
+line = NodePath("Line2D")
+ui = NodePath("UI/Root")
+debugLabel = NodePath("UI/Root/Label")
+btnAddNode = NodePath("UI/Root/BtnAddNode")
+
+[node name="Cam" type="Camera2D" parent="."]
+
+[node name="Cursor" type="Sprite2D" parent="Cam"]
+position = Vector2(0, -24.375)
+scale = Vector2(0.0480372, 0.0281508)
+texture = ExtResource("4_klphp")
+
+[node name="Line2D" type="Line2D" parent="."]
+material = SubResource("ShaderMaterial_6huug")
+points = PackedVector2Array(0, 0, 999, 0)
+default_color = Color(0.92549, 0.356863, 0.301961, 1)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Root" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Label" type="Label" parent="UI/Root"]
+layout_mode = 0
+offset_left = 28.0
+offset_top = 23.0
+offset_right = 410.0
+offset_bottom = 110.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 71
+text = "dwadwad"
+
+[node name="BtnAddNode" type="Button" parent="UI/Root"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -61.0
+offset_top = -47.0
+offset_right = 61.0
+offset_bottom = -14.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Add"
