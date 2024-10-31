@@ -20,6 +20,8 @@ public partial class MStickNode : Node2D
 
 	[Export]
 	public Button btnRemove;
+	[Export]
+	public Button btnDelete;
 
 	[Export]
 	public Control labelPaste;
@@ -35,6 +37,7 @@ public partial class MStickNode : Node2D
 		texEmptyPanel.PivotOffset = texEmptyPanel.Size/2;
 		texRect.Texture = null;
 		btnRemove.Pressed += OnRemove;
+		btnDelete.Pressed += OnDelete;
 		var modu = labelPaste.SelfModulate;
 		modu.A = 0;
 		labelPaste.SelfModulate = modu;
@@ -137,6 +140,11 @@ public partial class MStickNode : Node2D
 		var picPath = JobStickMain.GetSavePicPath(data);
 		if (File.Exists(picPath)) File.Delete(picPath);
 		Refresh(true);
+	}
+	private void OnDelete() {
+		UploadImage(null);
+		JobStickMain.instance.nodes.Remove(data);
+		QueueFree();
 	}
 
 	private void OnMouseEnter() {

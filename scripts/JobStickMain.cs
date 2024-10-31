@@ -21,7 +21,9 @@ public partial class JobStickMain : Node
 	public Control ui;
 
 	[Export]
-	public Label debugLabel;
+	public Label sumLabel;
+	[Export]
+	public Label cursorLabel;
 
 	[Export]
 	public Node2D me;
@@ -102,11 +104,12 @@ public partial class JobStickMain : Node
 			shm.SetShaderParameter("spacing", weekScale);
 		}
 		cursorWeek = (int)(cam.Position.X/weekScale);
-		debugLabel.Text = $"{cursorWeek} 周";
+		sumLabel.Text = $"你已经坚持了 {(int)((currentDay-dayBegin).TotalDays)/7} 周";
+		cursorLabel.Text = $"第{cursorWeek}周";
 #if TOOLS
-		var now = DateTime.Now;
-		var dnow = now.AddHours(debugHourOffset);
-		debugLabel.Text = $"{cursorWeek} 周\n({dnow.Date}({now}+{debugHourOffset}))";
+		// var now = DateTime.Now;
+		// var dnow = now.AddHours(debugHourOffset);
+		// debugLabel.Text = $"{cursorWeek} 周\n({dnow.Date}({now}+{debugHourOffset}))";
 #endif
 
 		if (droppedFiles != null) {

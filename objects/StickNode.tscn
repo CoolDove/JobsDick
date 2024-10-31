@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://b7lwqa63sc350"]
+[gd_scene load_steps=13 format=3 uid="uid://b7lwqa63sc350"]
 
 [ext_resource type="Script" path="res://scripts/MStickNode.cs" id="1_j8f8d"]
 [ext_resource type="FontFile" uid="uid://30h7v1vsuhp" path="res://resources/dengl.ttf" id="1_slxkf"]
@@ -28,13 +28,40 @@ anti_aliasing_size = 0.2
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_tu51h"]
 
-[node name="StickNode" type="Node2D" node_paths=PackedStringArray("edit", "texRect", "texEmptyPanel", "emptyButtons", "btnRemove", "labelPaste")]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gby5b"]
+bg_color = Color(0.909804, 0, 0, 0)
+border_width_top = 2
+border_color = Color(0.909804, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dkaxj"]
+bg_color = Color(0.909804, 0, 0, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+anti_aliasing_size = 0.2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nla1u"]
+bg_color = Color(0.909804, 0, 0, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.909804, 0, 0, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+anti_aliasing_size = 0.2
+
+[node name="StickNode" type="Node2D" node_paths=PackedStringArray("edit", "texRect", "texEmptyPanel", "emptyButtons", "btnRemove", "btnDelete", "labelPaste")]
 script = ExtResource("1_j8f8d")
 edit = NodePath("Edit")
 texRect = NodePath("TextureRect")
 texEmptyPanel = NodePath("TextureRect/EmptyPanel")
 emptyButtons = NodePath("TextureRect/EmptyButtons")
 btnRemove = NodePath("TextureRect/BtnRemove")
+btnDelete = NodePath("BtnDelete")
 labelPaste = NodePath("TextureRect/EmptyButtons/LabelPaste")
 
 [node name="Edit" type="LineEdit" parent="."]
@@ -127,3 +154,22 @@ theme_override_styles/pressed = SubResource("StyleBoxEmpty_tu51h")
 icon = ExtResource("3_heym1")
 icon_alignment = 1
 expand_icon = true
+
+[node name="BtnDelete" type="Button" parent="."]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -65.0
+offset_top = 215.0
+offset_right = 65.0
+offset_bottom = 238.0
+grow_horizontal = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.941176, 0.941176, 0.941176, 0)
+theme_override_colors/font_pressed_color = Color(0.909804, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0.941176, 0.941176, 0.941176, 1)
+theme_override_fonts/font = ExtResource("1_slxkf")
+theme_override_styles/normal = SubResource("StyleBoxFlat_gby5b")
+theme_override_styles/hover = SubResource("StyleBoxFlat_dkaxj")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_nla1u")
+text = "DELETE"

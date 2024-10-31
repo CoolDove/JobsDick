@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://i8lbgo5buenv"]
+[gd_scene load_steps=8 format=3 uid="uid://i8lbgo5buenv"]
 
 [ext_resource type="Script" path="res://scripts/JobStickMain.cs" id="1_wra4m"]
+[ext_resource type="FontFile" uid="uid://30h7v1vsuhp" path="res://resources/dengl.ttf" id="2_r6div"]
 [ext_resource type="Shader" path="res://shaders/timeline.gdshader" id="3_2dd0u"]
 [ext_resource type="PackedScene" uid="uid://b7lwqa63sc350" path="res://objects/StickNode.tscn" id="4_4ytqf"]
 [ext_resource type="Texture2D" uid="uid://dvdyr3oy4t7to" path="res://resources/me.png" id="4_dm0yd"]
@@ -12,17 +13,37 @@ shader_parameter/spacing = 20.0
 shader_parameter/width = 2.0
 shader_parameter/seg_color = Color(0.396078, 0.160784, 0.160784, 1)
 
-[node name="Node" type="Node" node_paths=PackedStringArray("cam", "line", "ui", "debugLabel", "me", "btnAddNode")]
+[node name="Node" type="Node" node_paths=PackedStringArray("cam", "line", "ui", "sumLabel", "cursorLabel", "me", "btnAddNode")]
 script = ExtResource("1_wra4m")
 cam = NodePath("Cam")
 pksStickNode = ExtResource("4_4ytqf")
 line = NodePath("Line2D")
 ui = NodePath("UI/Root")
-debugLabel = NodePath("UI/Root/Label")
+sumLabel = NodePath("UI/Root/Label")
+cursorLabel = NodePath("Cam/CursorLabel")
 me = NodePath("Me")
 btnAddNode = NodePath("UI/Root/BtnAddNode")
 
 [node name="Cam" type="Camera2D" parent="."]
+
+[node name="CursorLabel" type="Label" parent="Cam"]
+z_index = 5
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -22.0
+offset_top = -56.0
+offset_right = 22.0
+offset_bottom = -38.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.223529)
+theme_override_fonts/font = ExtResource("2_r6div")
+theme_override_font_sizes/font_size = 16
+text = "第1周"
 
 [node name="Cursor" type="Sprite2D" parent="Cam"]
 self_modulate = Color(1, 1, 1, 0.478431)
